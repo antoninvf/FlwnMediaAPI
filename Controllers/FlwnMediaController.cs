@@ -76,6 +76,21 @@ public class FlwnMediaController : ControllerBase
         return Redirect(files[random.Next(files.Count)].Link);
     }
     
+    
+    [HttpGet("randommp4")]
+    public IResult GetRandomMp4()
+    {
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") path = "Z:/opt/flwnfiles/media";
+
+        // recursively get all files in the directory and subdirectoriess
+        var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+        var mp4Files = files.Where(x => x.EndsWith(".mp4")).ToList();
+        var random = new Random();
+
+        // return random mp4 file as content
+        return Results.Stream(new FileStream(mp4Files[random.Next(mp4Files.Count)], FileMode.Open), "video/mp4");
+    }
+    
     [HttpGet("votv")]
     public ActionResult GetVotv()
     {
