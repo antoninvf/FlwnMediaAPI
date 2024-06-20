@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="606ae8bb-0607-4858-8d5a-27c8b5808523" name="PETER" url="https://api.gangnamstyle.dev">
+        <fileTransfer mountedRoot="P:\api" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="PETER">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/ChutoyEmporiumAPI.sln" web="/" />
+            <mapping local="$PROJECT_DIR$/ChutoyEmporiumAPI.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/Controllers/McDownloadsController.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Properties/launchSettings.json" web="/" />
+            <mapping local="$PROJECT_DIR$/obj/Release/net7.0/ChutoyEmporiumAPI.GlobalUsings.g.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/obj/Release/net7.0/ChutoyEmporiumAPI.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/obj/Release/net7.0/ChutoyEmporiumAPI.GeneratedMSBuildEditorConfig.editorconfig" web="/" />
+            <mapping local="$PROJECT_DIR$/Program.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/appsettings.Development.json" web="/" />
+            <mapping local="$PROJECT_DIR$/appsettings.json" web="/" />
+            <mapping local="C:/Program Files/dotnet/sdk/7.0.202/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_7_default.editorconfig" web="/" />
+            <mapping local="$PROJECT_DIR$/File.cs" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
