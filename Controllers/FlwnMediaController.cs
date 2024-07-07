@@ -29,7 +29,7 @@ public class FlwnMediaController : ControllerBase
         {
             var file = new MediaFile();
             file.FileName = Path.GetFileName(e);
-            file.Link = $"https://m.flwn.dev/{Uri.EscapeDataString(file.FileName)}";
+            file.Link = $"https://files.flwn.dev/media/{Uri.EscapeDataString(file.FileName)}";
             fileList.Add(file);
         }
 
@@ -88,7 +88,7 @@ public class FlwnMediaController : ControllerBase
         var random = new Random();
 
         // return random mp4 file as content
-        return Results.Stream(new FileStream(mp4Files[random.Next(mp4Files.Count)], FileMode.Open), "video/mp4");
+        return Results.Stream(new FileStream(mp4Files[random.Next(mp4Files.Count)], FileMode.Open, FileAccess.Read), "video/mp4");
     }
     
     [HttpGet("votv")]
