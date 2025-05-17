@@ -7,23 +7,17 @@ namespace FlwnMediaAPI.Controllers;
 [EnableCors("flwn")]
 [ApiController]
 [Route("")]
-public class FlwnMediaController : ControllerBase
+public class FlwnMediaController(ILogger<FlwnMediaController> logger) : ControllerBase
 {
-    private readonly ILogger<FlwnMediaController> _logger;
+    private static readonly Random _random = new();
+    private string _mediaPath = "/opt/flwnfiles/media";
 
-    public FlwnMediaController(ILogger<FlwnMediaController> logger)
+    private List<MediaFile> GetFiles()
     {
-        _logger = logger;
-    }
-
-    private string path = "/opt/flwnfiles/media";
-
-    private List<MediaFile> getFiles()
-    {
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") path = "Z:/opt/flwnfiles/media";
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") _mediaPath = "Z:/opt/flwnfiles/media";
 
         // recursively get all files in the directory and subdirectoriess
-        var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(_mediaPath, "*", SearchOption.AllDirectories);
         var fileList = new List<MediaFile>();
         foreach (var e in files)
         {
@@ -39,21 +33,21 @@ public class FlwnMediaController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<MediaFile>> GetAll()
     {
-        return getFiles();
+        return GetFiles();
     }
 
     [HttpGet("random")]
     public ActionResult<MediaFile> GetRandom()
     {
         // all files except Thumbs.db
-        var files = getFiles().Where(x => !x.FileName.Equals("Thumbs.db")).ToList();
+        var files = GetFiles().Where(x => !x.FileName.Equals("Thumbs.db")).ToList();
         // get query parameter
         var query = Request.Query["onlyvideo"];
         if (query.Count > 0)
         {
             files = files.Where(x => x.FileName.EndsWith(".mp4") || x.FileName.EndsWith(".webm") || x.FileName.EndsWith(".mov")).ToList();
         }
-        
+
         var random = new Random();
 
         return files[random.Next(files.Count)];
@@ -63,39 +57,44 @@ public class FlwnMediaController : ControllerBase
     public ActionResult GetVisitRandom()
     {
         // all files except Thumbs.db
-        var files = getFiles().Where(x => !x.FileName.Equals("Thumbs.db")).ToList();
+        var files = GetFiles().Where(x => !x.FileName.Equals("Thumbs.db")).ToList();
         // get query parameter
         var query = Request.Query["onlyvideo"];
         if (query.Count > 0)
         {
             files = files.Where(x => x.FileName.EndsWith(".mp4") || x.FileName.EndsWith(".webm") || x.FileName.EndsWith(".mov")).ToList();
         }
-        
-        var random = new Random();
 
-        return Redirect(files[random.Next(files.Count)].Link);
+        return Redirect(files[_random.Next(files.Count)].Link);
     }
-    
-    
+
+
     [HttpGet("randommp4")]
     public IResult GetRandomMp4()
     {
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") path = "Z:/opt/flwnfiles/media";
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") _mediaPath = "Z:/opt/flwnfiles/media";
 
         // recursively get all files in the directory and subdirectoriess
-        var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(_mediaPath, "*", SearchOption.AllDirectories);
         var mp4Files = files.Where(x => x.EndsWith(".mp4")).ToList();
-        var random = new Random();
 
-        // return random mp4 file as content
-        return Results.Stream(new FileStream(mp4Files[random.Next(mp4Files.Count)], FileMode.Open, FileAccess.Read), "video/mp4");
+        var mp4File = mp4Files[_random.Next(mp4Files.Count)];
+        var realIp = Request.Headers["CF-Connecting-IP"];
+        if (realIp.Count == 0) realIp = Request.Headers["X-Forwarded-For"];
+        logger.Log(LogLevel.Information, $"Streaming {mp4File} | {realIp.ToString()}");
+
+        // stream random mp4 file as content
+        return Results.Stream(
+            new FileStream(mp4File, FileMode.Open, FileAccess.Read),
+            contentType: "video/mp4"
+        );
     }
-    
+
     [HttpGet("votv")]
     public ActionResult GetVotv()
     {
         // get all video files
-        var files = getFiles().Where(x => x.FileName.EndsWith(".mp4") || x.FileName.EndsWith(".webm") || x.FileName.EndsWith(".mov")).ToList();
+        var files = GetFiles().Where(x => x.FileName.EndsWith(".mp4") || x.FileName.EndsWith(".webm") || x.FileName.EndsWith(".mov")).ToList();
 
         var file = string.Join("\n", files.Select(x => $"{x.FileName}\n{x.Link}"));
         return Content(file, "text/plain");
@@ -105,7 +104,7 @@ public class FlwnMediaController : ControllerBase
     [HttpGet("stats")]
     public ActionResult<Stats> GetStats()
     {
-        var files = getFiles();
+        var files = GetFiles();
         var stats = new Stats();
         stats.FileCount = files.Count;
 
